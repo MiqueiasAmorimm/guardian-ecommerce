@@ -1,4 +1,4 @@
-package com.guardian.catalog.web.controller;
+package com.guardian.catalog.application.dto;
 
 public record HealthResponse(
         String status,
