@@ -13,7 +13,11 @@ class ProductTest {
     @Test
     @DisplayName("should create product successfully when valid data is provided")
     void shouldCreateProductSuccessfully() {
-        Product product = new Product("Laptop", BigDecimal.valueOf(1000));
+        Product product = new Product(
+                "Laptop",
+                "High performance laptop",
+                BigDecimal.valueOf(1000)
+        );
 
         assertNotNull(product);
     }
@@ -22,7 +26,7 @@ class ProductTest {
     @DisplayName("should throw exception when name is null")
     void shouldThrowExceptionWhenNameIsNull() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Product(null, BigDecimal.TEN)
+                new Product(null, "Valid description", BigDecimal.TEN)
         );
     }
 
@@ -30,7 +34,7 @@ class ProductTest {
     @DisplayName("should throw exception when name is blank")
     void shouldThrowExceptionWhenNameIsBlank() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Product("   ", BigDecimal.TEN)
+                new Product("   ", "Valid description", BigDecimal.TEN)
         );
     }
 
@@ -38,18 +42,21 @@ class ProductTest {
     @DisplayName("should throw exception when price is negative")
     void shouldThrowExceptionWhenPriceIsNegative() {
         assertThrows(IllegalArgumentException.class, () ->
-                new Product("TV", BigDecimal.valueOf(-1))
+                new Product("TV", "Smart TV 50 inches", BigDecimal.valueOf(-1))
         );
     }
 
     @Test
     @DisplayName("should change price successfully")
     void shouldChangePriceSuccessfully() {
-        Product product = new Product("TV", BigDecimal.TEN);
+        Product product = new Product(
+                "TV",
+                "Smart TV 50 inches",
+                BigDecimal.TEN
+        );
 
         product.changePrice(BigDecimal.valueOf(20));
 
-        // sem getter ainda, então apenas valida que não lança exceção
         assertDoesNotThrow(() ->
                 product.changePrice(BigDecimal.valueOf(30))
         );
@@ -58,7 +65,11 @@ class ProductTest {
     @Test
     @DisplayName("should throw exception when changing price to negative")
     void shouldThrowExceptionWhenChangingPriceToNegative() {
-        Product product = new Product("TV", BigDecimal.TEN);
+        Product product = new Product(
+                "TV",
+                "Smart TV 50 inches",
+                BigDecimal.TEN
+        );
 
         assertThrows(IllegalArgumentException.class, () ->
                 product.changePrice(BigDecimal.valueOf(-5))

@@ -5,25 +5,50 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "product")
 public class Product {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private String description;
+
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
+
+    @Column(nullable = false)
     private boolean active;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
+
+    @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
     protected Product() {
         // for JPA
     }
 
-    public Product(String name, BigDecimal price) {
+    public Product(String name, String description, BigDecimal price) {
         validateName(name);
+        validateDescription(description);
         validatePrice(price);
 
-        this.id = UUID.randomUUID();
         this.name = name;
+        this.description = description;
         this.price = price;
         this.active = false;
         this.createdAt = Instant.now();
@@ -34,7 +59,7 @@ public class Product {
         validatePrice(newPrice);
 
         if (this.price.compareTo(newPrice) == 0) {
-            return; // no real change
+            return;
         }
 
         this.price = newPrice;
@@ -69,6 +94,12 @@ public class Product {
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("name cannot be empty");
+        }
+    }
+
+    private void validateDescription(String description) {
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("description cannot be empty");
         }
     }
 

@@ -1,13 +1,13 @@
-create table product (
-    id uuid primary key,
+CREATE TABLE product (
+    id UUID PRIMARY KEY,
 
-    name varchar(255) not null,
-    description varchar(500),
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(500) NOT NULL,
 
-    price numeric(10,2) not null,
+    price NUMERIC(10,2) NOT NULL,
 
-    active boolean not null,
+    active BOOLEAN NOT NULL,
 
-    created_at timestamp not null,
-    updated_at timestamp not null
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
 );
