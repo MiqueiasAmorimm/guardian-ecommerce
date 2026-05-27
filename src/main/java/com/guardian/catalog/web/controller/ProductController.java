@@ -3,6 +3,7 @@ package com.guardian.catalog.web.controller;
 import com.guardian.catalog.application.usecase.CreateProductUseCase;
 import com.guardian.catalog.domain.model.Product;
 import com.guardian.catalog.web.dto.CreateProductRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,8 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product create(@RequestBody CreateProductRequest request) {
-        return createProductUseCase.execute(request);
+    public ResponseEntity<Product> create(@RequestBody CreateProductRequest request) {
+        Product  product = createProductUseCase.execute(request);
+        return ResponseEntity.status(201).body(product);
     }
 }
