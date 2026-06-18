@@ -4,6 +4,7 @@ import com.guardian.catalog.application.usecase.CreateProductUseCase;
 import com.guardian.catalog.application.usecase.GetProductByIdUseCase;
 import com.guardian.catalog.domain.model.Product;
 import com.guardian.catalog.web.dto.CreateProductRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> create(@RequestBody CreateProductRequest request) {
+    public ResponseEntity<Product> create(@Valid @RequestBody CreateProductRequest request) {
         Product product = createProductUseCase.execute(request);
         return ResponseEntity.status(201).body(product);
     }
