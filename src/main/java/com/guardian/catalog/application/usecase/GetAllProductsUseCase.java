@@ -12,7 +12,7 @@ public class GetAllProductsUseCase {
     public GetAllProductsUseCase(ProductRepository productRepository) {
         this.productsRepository = productRepository;
     }
-    public List<Product> Execute() {
+    public List<Product> execute() {
         return productsRepository.findAll();
     }
 }
