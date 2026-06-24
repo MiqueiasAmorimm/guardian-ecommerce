@@ -1,6 +1,7 @@
 package com.guardian.catalog.web.controller;
 
 import com.guardian.catalog.application.usecase.CreateProductUseCase;
+import com.guardian.catalog.application.usecase.GetAllProductsUseCase;
 import com.guardian.catalog.application.usecase.GetProductByIdUseCase;
 import com.guardian.catalog.domain.model.Product;
 import com.guardian.catalog.web.dto.CreateProductRequest;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,11 +18,14 @@ import java.util.UUID;
 public class ProductController {
     private final CreateProductUseCase createProductUseCase;
     private final GetProductByIdUseCase getProductByIdUseCase;
+    private final GetAllProductsUseCase getAllProductsUseCase;
 
     public ProductController(CreateProductUseCase createProductUseCase,
-                             GetProductByIdUseCase getProductByIdUseCase) {
+                             GetProductByIdUseCase getProductByIdUseCase,
+                                GetAllProductsUseCase getAllProductsUseCase){
         this.createProductUseCase = createProductUseCase;
         this.getProductByIdUseCase = getProductByIdUseCase;
+        this.getAllProductsUseCase = getAllProductsUseCase;
     }
 
     @PostMapping
@@ -34,6 +39,12 @@ public class ProductController {
         Optional<Product> product = getProductByIdUseCase.execute(id);
         return product.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+    @GetMapping
+    public List<Product> findAll(){
+       return getAllProductsUseCase.execute();
+
+
     }
 }
 
