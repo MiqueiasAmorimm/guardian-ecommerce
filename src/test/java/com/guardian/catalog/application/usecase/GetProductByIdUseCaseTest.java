@@ -35,4 +35,15 @@
                 assertTrue(result.isPresent());
                 assertEquals("Tenis Nike", result.get().getName());
             }
+
+            @Test
+            void shouldReturnEmptyWhenIdNotFound() {
+                UUID id = UUID.randomUUID();
+                when(productRepository.findById(id)).thenReturn(Optional.empty());
+
+                Optional<Product> result = getProductByIdUseCase.execute(id);
+
+                assertTrue(result.isEmpty());
+
+            }
         }
