@@ -81,3 +81,8 @@ Returns `200 OK` with a list of products.
 - `price` — required, must be greater than or equal to zero
 
 Invalid data returns `400 Bad Request` with a detailed message per field.
+
+## API Documentation
+
+Swagger UI is available when the application is running:
+`http://localhost:8081/swagger-ui/index.html`
