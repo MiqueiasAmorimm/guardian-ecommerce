@@ -1,5 +1,6 @@
 package com.guardian.catalog.web.exception;
 
+import com.guardian.catalog.domain.exception.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -24,4 +25,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
 
     }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(404).body(ex.getMessage());
+
+    }
+
 }
