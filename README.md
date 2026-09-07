@@ -26,6 +26,15 @@ The project follows a layered architecture with clear separation of concerns:
 - **UUID** as ID instead of Long — avoids collision between microservices
 - **Flyway** instead of ddl-auto — schema version control
 - **Rich domain model** — validation rules stay in the entity, not scattered across layers
+- **Environment variables** — credentials configured via environment variables
+
+## Configuration
+
+| Property | Description | Default |
+|---|---|---|
+| `DB_URL` | Database URL | `jdbc:postgresql://localhost:5433/guardian_catalog` |
+| `DB_USERNAME` | Database username | `guardian` |
+| `DB_PASSWORD` | Database password | `guardian` |
 
 ## How to Run
 
@@ -81,6 +90,23 @@ Returns `200 OK` with a list of products.
 - `price` — required, must be greater than or equal to zero
 
 Invalid data returns `400 Bad Request` with a detailed message per field.
+
+## Testing
+
+Unit tests implemented with JUnit 5 and Mockito, covering all use cases:
+
+- `CreateProductUseCase` — product created successfully
+- `GetProductByIdUseCase` — product found and not found
+- `GetAllProductsUseCase` — returns all products
+
+Run tests:
+```bash
+./mvnw test
+```
+
+## CI
+
+GitHub Actions runs all unit tests automatically on every push to main.
 
 ## API Documentation
 
