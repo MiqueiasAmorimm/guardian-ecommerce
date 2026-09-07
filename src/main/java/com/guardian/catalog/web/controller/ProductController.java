@@ -6,6 +6,8 @@ import com.guardian.catalog.application.usecase.GetProductByIdUseCase;
 import com.guardian.catalog.domain.model.Product;
 import com.guardian.catalog.web.dto.CreateProductRequest;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,8 +43,8 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
     @GetMapping
-    public List<Product> findAll(){
-       return getAllProductsUseCase.execute();
+    public Page<Product> findAll(Pageable pageable){
+       return getAllProductsUseCase.execute(pageable);
 
 
     }

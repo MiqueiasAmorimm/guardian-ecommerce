@@ -7,6 +7,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -29,11 +33,14 @@ public class GetAllProductsUseCaseTest {
                 new Product("Tenis Nike", "Tenis esportivo masculino", new BigDecimal("299.90")),
                 new Product("Camiseta Adidas", "Camiseta esportiva", new BigDecimal("149.90"))
         );
-        when(productRepository.findAll()).thenReturn(products);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Product> page = new PageImpl<>(products, pageable, products.size());
 
-        List<Product> result = getAllProductsUseCase.execute();
+        when(productRepository.findAll(pageable)).thenReturn(page);
+
+        Page<Product> result = getAllProductsUseCase.execute(pageable);
 
         assertNotNull(result);
-        assertEquals(2, result.size());
+        assertEquals(2, result.getTotalElements());
     }
 }
