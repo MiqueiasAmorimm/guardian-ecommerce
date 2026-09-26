@@ -42,11 +42,13 @@ The project follows a layered architecture with clear separation of concerns:
 - Docker
 - Java 17
 
-### Starting the database
+### Starting the infrastructure
 
 ```bash
 docker-compose up -d
 ```
+
+This starts PostgreSQL (for both catalog-service and order-service) and the Kafka broker used for asynchronous communication between services.
 
 ### Running the application
 
