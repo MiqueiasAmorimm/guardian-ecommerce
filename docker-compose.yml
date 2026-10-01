@@ -27,6 +27,19 @@ services:
     volumes:
       - postgres_order_data:/var/lib/postgresql/data
 
+  postgres-payment:
+    image: postgres:16-alpine
+    container_name: guardian-postgres-payment
+    restart: always
+    environment:
+      POSTGRES_DB: guardian_payment
+      POSTGRES_USER: guardian
+      POSTGRES_PASSWORD: guardian
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_payment_data:/var/lib/postgresql/data
+
   kafka:
     image: apache/kafka:3.9.0
     container_name: guardian-kafka
@@ -47,3 +60,4 @@ services:
 volumes:
   postgres_data:
   postgres_order_data:
+  postgres_payment_data:
