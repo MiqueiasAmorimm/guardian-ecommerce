@@ -48,7 +48,7 @@ The project follows a layered architecture with clear separation of concerns:
 docker-compose up -d
 ```
 
-This starts PostgreSQL (for both catalog-service and order-service) and the Kafka broker used for asynchronous communication between services.
+This starts one PostgreSQL instance per service (catalog, order and payment) and the Kafka broker used for asynchronous communication between services.
 
 ### Running the application
 
