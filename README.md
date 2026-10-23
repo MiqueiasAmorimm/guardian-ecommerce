@@ -1,34 +1,77 @@
-# Guardian — Catalog Service
+# Guardian
 
-Microservice responsible for product catalog management in an event-driven e-commerce system.
+Microservices e-commerce platform built to practice back-end engineering with Java and Spring Boot: independent services, each with its own database, communicating through REST and Apache Kafka.
+
+> **Status:** work in progress. Catalog and Order services are functional; the Payment service already consumes order events and is being evolved.
+
+## Services
+
+| Service | Responsibility | Port | Database | Status |
+|---|---|---|---|---|
+| **catalog-service** (this repository) | Product catalog management | 8081 | PostgreSQL (5433) | Functional |
+| [order-service](https://github.com/MiqueiasAmorimm/-guardian-order-service) | Order creation and order status | 8082 | PostgreSQL (5434) | Functional |
+| [payment-service](https://github.com/MiqueiasAmorimm/guardian-payment-service) | Payment status, consumes order events | 8083 | PostgreSQL (5435) | In progress |
+
+## How the services work together
+
+```
+Client ──► order-service ──(REST)──► catalog-service
+               │                         (product price)
+               │ calculates the order total
+               ▼
+        Kafka topic: order.created
+               │
+               ▼
+        payment-service (consumer)
+```
+
+1. A client creates an order in **order-service**.
+2. **order-service** asks **catalog-service** for the product price over HTTP and calculates the order total.
+3. **order-service** publishes an `order.created` event to Kafka.
+4. **payment-service** consumes the event and starts managing the payment status.
+
+Each service has its own database, so one can change without breaking the others.
 
 ## Tech Stack
 
 - Java 17
 - Spring Boot 3.2.5
-- Spring Data JPA
+- Spring Data JPA / Hibernate
 - PostgreSQL 16
-- Flyway
-- Docker
+- Flyway (database migrations)
+- Apache Kafka
+- Docker and Docker Compose
+- JUnit 5 and Mockito
+- GitHub Actions (CI)
+- Swagger / OpenAPI
 - Lombok
 
 ## Architecture
 
-The project follows a layered architecture with clear separation of concerns:
+Each service follows a layered architecture with clear separation of concerns:
 
-- **domain** → `Product` entity with business rules (rich domain model)
+- **domain** → entities and business rules
 - **application** → use cases representing system actions
-- **infrastructure** → JPA repository for database access
+- **infrastructure** → persistence and messaging (JPA repositories, Kafka)
 - **web** → REST controllers, DTOs, and global error handling
 
 ### Technical Decisions
 
-- **UUID** as ID instead of Long — avoids collision between microservices
-- **Flyway** instead of ddl-auto — schema version control
-- **Rich domain model** — validation rules stay in the entity, not scattered across layers
-- **Environment variables** — credentials configured via environment variables
+Key decisions (UUID as ID, Flyway migrations, rich domain model, status enums with transition validators, one database per service, Kafka between services) and the reasoning behind them are documented in [`DECISIONS.md`](DECISIONS.md).
 
-## Configuration
+## Roadmap
+
+- [x] Catalog service (create, get and list products), with tests and CI
+- [x] Order service with status validation
+- [x] Kafka communication: `order.created` published by order-service and consumed by payment-service
+- [ ] Payment processing in payment-service (approve / reject payments)
+- [ ] Payment result events back to order-service
+- [ ] Authentication and authorization
+- [ ] Containerized deployment (Kubernetes / cloud)
+
+## Catalog Service
+
+### Configuration
 
 | Property | Description | Default |
 |---|---|---|
@@ -36,13 +79,13 @@ The project follows a layered architecture with clear separation of concerns:
 | `DB_USERNAME` | Database username | `guardian` |
 | `DB_PASSWORD` | Database password | `guardian` |
 
-## How to Run
+### How to Run
 
-### Prerequisites
+#### Prerequisites
 - Docker
 - Java 17
 
-### Starting the infrastructure
+#### Starting the infrastructure
 
 ```bash
 docker-compose up -d
@@ -50,7 +93,7 @@ docker-compose up -d
 
 This starts one PostgreSQL instance per service (catalog, order and payment) and the Kafka broker used for asynchronous communication between services.
 
-### Running the application
+#### Running the application
 
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
@@ -58,9 +101,9 @@ This starts one PostgreSQL instance per service (catalog, order and payment) and
 
 The application runs on port `8081`.
 
-## Endpoints
+### Endpoints
 
-### Create product
+#### Create product
 ```
 POST /products
 ```
@@ -73,19 +116,20 @@ POST /products
 ```
 Returns `201 Created` with the created product.
 
-### Get product by ID
+#### Get product by ID
 
-GET /products/{id}
+`GET /products/{id}`
 
 Returns `200 OK` with the product or `404 Not Found`.
 
-### List all products
+#### List products (paginated)
 
-GET /products
+`GET /products?page=0&size=10`
 
-Returns `200 OK` with a list of products.
+Returns `200 OK` with a page of products (content, total elements, total pages).
+Optional parameters: `page` (default 0), `size` (default 20) and `sort` (e.g. `sort=price,asc`).
 
-## Validations
+### Validations
 
 - `name` — required, must not be blank
 - `description` — required, must not be blank
@@ -93,7 +137,7 @@ Returns `200 OK` with a list of products.
 
 Invalid data returns `400 Bad Request` with a detailed message per field.
 
-## Testing
+### Testing
 
 Unit tests implemented with JUnit 5 and Mockito, covering all use cases:
 
@@ -106,11 +150,11 @@ Run tests:
 ./mvnw test
 ```
 
-## CI
+### CI
 
 GitHub Actions runs all unit tests automatically on every push to main.
 
-## API Documentation
+### API Documentation
 
 Swagger UI is available when the application is running:
 `http://localhost:8081/swagger-ui/index.html`
