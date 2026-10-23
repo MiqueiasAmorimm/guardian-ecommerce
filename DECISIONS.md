@@ -74,3 +74,11 @@ Each decision lists the context, what was chosen, the alternatives considered an
 - **How it was found:** following the logs from order-service to payment-service.
 - **Fix:** the event now carries the total (`price × quantity`).
 - **Takeaway:** test the whole flow end to end, not only each service alone.
+
+### 13. Idempotent consumer in payment-service
+- **Context:** Kafka may deliver the same message more than once.
+- **Decision:** the use case ignores an event whose order already has a payment, and a unique constraint on `order_id` makes the database reject a second one.
+- **Alternative:** assuming each event arrives exactly once.
+- **Trade-off:** one extra query per event, but a repeated event never creates two payments.
+
+### 14. Lesson learned: the event carried the unit price

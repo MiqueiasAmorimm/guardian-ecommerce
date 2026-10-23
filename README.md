@@ -2,7 +2,7 @@
 
 Microservices e-commerce platform built to practice back-end engineering with Java and Spring Boot: independent services, each with its own database, communicating through REST and Apache Kafka.
 
-> **Status:** work in progress. Catalog and Order services are functional; the Payment service already consumes order events and is being evolved.
+> **Status:** work in progress. Catalog and Order services are functional. The Payment service consumes order events and creates a payment for each order; approval is simulated for now (every payment is approved).
 
 ## Services
 
@@ -10,7 +10,7 @@ Microservices e-commerce platform built to practice back-end engineering with Ja
 |---|---|---|---|---|
 | **catalog-service** (this repository) | Product catalog management | 8081 | PostgreSQL (5433) | Functional |
 | [order-service](https://github.com/MiqueiasAmorimm/-guardian-order-service) | Order creation and order status | 8082 | PostgreSQL (5434) | Functional |
-| [payment-service](https://github.com/MiqueiasAmorimm/guardian-payment-service) | Payment status, consumes order events | 8083 | PostgreSQL (5435) | In progress |
+| [payment-service](https://github.com/MiqueiasAmorimm/guardian-payment-service) | Creates a payment for each order event | 8083 | PostgreSQL (5435) | In progress |
 
 ## How the services work together
 
@@ -28,14 +28,14 @@ Client ──► order-service ──(REST)──► catalog-service
 1. A client creates an order in **order-service**.
 2. **order-service** asks **catalog-service** for the product price over HTTP and calculates the order total.
 3. **order-service** publishes an `order.created` event to Kafka.
-4. **payment-service** consumes the event and starts managing the payment status.
+4. **payment-service** consumes the event and creates a payment for the order. Approval is simulated for now, and a repeated event does not create a second payment.
 
 Each service has its own database, so one can change without breaking the others.
 
 ## Tech Stack
 
 - Java 17
-- Spring Boot 3.2.5
+- Spring Boot 3 (3.2 in catalog-service, 3.5 in order-service and payment-service)
 - Spring Data JPA / Hibernate
 - PostgreSQL 16
 - Flyway (database migrations)
@@ -64,8 +64,10 @@ Key decisions (UUID as ID, Flyway migrations, rich domain model, status enums wi
 - [x] Catalog service (create, get and list products), with tests and CI
 - [x] Order service with status validation
 - [x] Kafka communication: `order.created` published by order-service and consumed by payment-service
-- [ ] Payment processing in payment-service (approve / reject payments)
-- [ ] Payment result events back to order-service
+- [x] Payment creation in payment-service from `order.created` (approval simulated), with protection against duplicate events
+- [ ] Unit tests for payment-service
+- [ ] Real approve / reject rules in payment-service
+- [ ] Payment result events (`payment.approved` / `payment.rejected`) consumed by order-service
 - [ ] Authentication and authorization
 - [ ] Containerized deployment (Kubernetes / cloud)
 
